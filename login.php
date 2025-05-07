@@ -2,7 +2,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "senai_iot";
+$dbname = "grafico";
 
 $usuario = $_POST['usuario'] ?? '';
 $senha = $_POST['senha'] ?? '';
@@ -22,20 +22,17 @@ if ($conn->connect_error) {
     exit;
 }
 
-$sql = "SELECT * FROM usuarios WHERE user = ?";
+// Corrigido: campo correto agora é 'nome'
+$sql = "SELECT * FROM usuarios WHERE nome = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $usuario);
 $stmt->execute();
 $result = $stmt->get_result();
 
-
-/*NUNCA FAÇA ISSO - SQL INJECTION
-$sql = "SELECT * FROM usuarios WHERE user = '" . $usuario . "'";
-$result = $conn->query($sql);
-*/
-
 if ($result->num_rows === 1) {
     $row = $result->fetch_assoc();
+
+    // Se estiver usando senha sem hash, troque para: if ($senha === $row['senha'])
     if (password_verify($senha, $row['senha'])) {
         session_start();
         $_SESSION['usuario'] = $usuario;
@@ -52,7 +49,7 @@ if ($result->num_rows === 1) {
 
 $conn->close();
 
-// Função para exibir modal e redirecionar
+// Função para exibir modal de erro
 function exibirModal($mensagem) {
     echo <<<HTML
 <!DOCTYPE html>
@@ -84,7 +81,7 @@ function exibirModal($mensagem) {
   <script>
     setTimeout(() => {
       window.location.href = 'index.php';
-    }, 4000); // Redireciona após 4 segundos
+    }, 4000);
   </script>
 </body>
 </html>

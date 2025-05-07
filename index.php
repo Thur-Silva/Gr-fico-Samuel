@@ -13,20 +13,24 @@
     <h3 class="text-center mb-4">Login - Senai</h3>
     
     <form action="login.php" method="post">
-    <div class="mb-3">
-      <label for="usuario" class="form-label">Usuário</label>
-      <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Digite seu usuário">
-    </div>
-    <div class="mb-3">
-      <label for="senha" class="form-label">Senha</label>
-      <input type="password" name="senha" class="form-control" id="senha" placeholder="Digite sua senha">
-    </div>
-    <div class="d-grid">
-      <button class="btn btn-primary" onclick="logar()">Logar</button>
-    </div>
+      <div class="mb-3">
+        <label for="usuario" class="form-label">Usuário</label>
+        <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Digite seu usuário">
+      </div>
+      <div class="mb-3">
+        <label for="senha" class="form-label">Senha</label>
+        <input type="password" name="senha" class="form-control" id="senha" placeholder="Digite sua senha">
+      </div>
+      <div class="d-grid mb-2">
+        <button type="submit" class="btn btn-primary">Logar</button>
+      </div>
     </form>
- 
+
+    <!-- Botão para login admin -->
+    <div class="d-grid">
+      <a href="loginAdmin.php" class="btn btn-outline-secondary">Login Administrador</a>
     </div>
+  </div>
 
   <!-- Modal de erro -->
   <div class="modal fade" id="erroModal" tabindex="-1" aria-labelledby="erroModalLabel" aria-hidden="true">
