@@ -214,52 +214,11 @@ if ($busca !== "") {
       z-index: -2;
     }
 
-    .home-container {
-      position: relative;
-      margin-right: 20px;
-    }
-    .home-button {
-      background-color: #010201;
-      border: none;
-      width: 100px;
-      height: 56px;
-      border-radius: 10px;
-      color: white;
-      font-size: 18px;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .home-button::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 10px;
-      padding: 2px;
-      background: linear-gradient(45deg, #402fb5, #cf30aa);
-      -webkit-mask: 
-         linear-gradient(#000 0 0) content-box, 
-         linear-gradient(#000 0 0);
-      mask: 
-         linear-gradient(#000 0 0) content-box, 
-         linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-    }
-    @keyframes rotate { 100% { transform: translate(-50%, -50%) rotate(450deg); } }
   </style>
 </head>
 <body>
 <div class="container mt-5">
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex align-items-center">
-        <!-- Botão Home -->
-        <div class="home-container">
-          <a href="index.php" class="home-button">Home</a>
-    </div>
     <h2 class="label-titulo">Gerenciamento de Usuários</h2>
     <!-- Campo de busca estilizado -->
     <form method="GET" style="display:flex; align-items:center; position:relative;">
