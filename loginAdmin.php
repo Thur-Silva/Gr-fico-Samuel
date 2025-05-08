@@ -78,10 +78,28 @@ HTML;
   <meta charset="UTF-8">
   <title>Login Admin</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+  body {      
+     font-family: Arial, sans-serif;
+      background: #f8f9fa;
+        width: 100%;
+        height: 100%;
+        --color: rgba(114, 114, 114, 0.3);
+        background-color: #191a1a;
+        background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+            linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+        background-size: 55px 55px;}
+
+        h2.login-admin {
+  color: #ffffff;
+}
+
+  </style>
 </head>
-<body class="bg-light">
+<body class="">
 <div class="container mt-5">
-  <h2 class="text-center mb-4">Login do Administrador</h2>
+<h2 class="text-center mb-4 login-admin">Login do Administrador</h2>
+
   <form method="POST" class="card p-4 mx-auto" style="max-width: 400px;">
     <div class="mb-3">
       <label class="form-label">Usuário</label>
