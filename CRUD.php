@@ -2,6 +2,7 @@
 session_start();
 if (!isset($_SESSION['admin'])) {
     header("Location: login.php");
+    
     exit;
 }
 
@@ -67,6 +68,7 @@ if ($busca !== "") {
 } else {
     $result = $conn->query("SELECT * FROM usuarios");
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -301,5 +303,67 @@ if ($busca !== "") {
   </div>
 
 </div>
+
+  <!-- log de ações no CRUD -->
+  <script>
+    // 1) formata data para MySQL
+    function formatarDataMySQL() {
+      const d = new Date();
+      const ano      = d.getFullYear();
+      const mes      = String(d.getMonth()+1).padStart(2,'0');
+      const dia      = String(d.getDate()).padStart(2,'0');
+      const hh       = String(d.getHours()).padStart(2,'0');
+      const mm       = String(d.getMinutes()).padStart(2,'0');
+      const ss       = String(d.getSeconds()).padStart(2,'0');
+      return `${ano}-${mes}-${dia} ${hh}:${mm}:${ss}`;
+    }
+
+    const adminUser = "<?php echo addslashes($_SESSION['admin_user'] ?? '');?>";
+    // 2) envia log para sua API e retorna a Promise
+    function registrarAcao(user, actionType) {
+
+      return fetch('http://localhost:3000/dados', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nome: adminUser,
+          action: actionType,
+          time: formatarDataMySQL()
+        })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Status ' + res.status);
+        return res.json();
+      });
+    }
+
+    // 3) intercepta TODO submit de formulário no CRUD
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+          const btn = e.submitter;                // qual botão disparou
+          if (!btn || !btn.name) return;          // não é ação de CRUD
+
+          let actionText = '';
+          if (btn.name === 'adicionar') {
+            actionText = 'Criou usuário ' + (form.nome?.value||'');
+          } else if (btn.name === 'editar') {
+            actionText = 'Atualizou usuário ID ' + (form.id?.value||'');
+          } else if (btn.name === 'excluir') {
+            actionText = 'Excluiu usuário ID ' + (form.id?.value||'');
+          } else {
+            return; // outro formulário
+          }
+
+          e.preventDefault();
+          // registrar e, após, submeter normalmente
+          registrarAcao(adminUser, actionText)
+          .then(() => form.submit())
+          .catch(() => form.submit());
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>

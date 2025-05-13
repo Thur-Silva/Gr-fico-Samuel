@@ -125,12 +125,12 @@ if (!isset($_SESSION['usuario'])) {
       transform: translateX(-50%);
       width: 400px;
       height: 400px;
-      background: radial-gradient(ellipse at top, rgba(255,255,200,0.4) 0%, rgba(0,0,0,0) 70%);
+      background: radial-gradient(ellipse at top, rgba(255, 255, 0, 0.59) 0%, rgba(0,0,0,0) 70%);
       pointer-events: none;
     }
     #lanterna.on {
-      background: #555;
-      box-shadow: 0 0 8px rgba(255,255,200,0.6);
+      background: #242424;
+      
     }
 
     .gauge-container {
@@ -242,7 +242,7 @@ if (!isset($_SESSION['usuario'])) {
 
     // WebSocket e gráfico originais
     let ultimoDado = null;
-    const socket = new WebSocket('ws://192.168.30.226:8080');
+    const socket = new WebSocket('ws://192.168.30.100:8080');
     socket.onopen = () => console.log("Conectado");
     socket.onerror = e => console.error(e);
     socket.onmessage = e => {
