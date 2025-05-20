@@ -52,41 +52,7 @@ if (!isset($_SESSION['usuario'])) {
       position: relative;
       z-index: 2;
     }
-    .button:hover { background-color: var(--action-color); }
-    .button:active { transform: scale(0.95); }
-    .button--bubble { background: none; padding: 0; }
-    .button--bubble__container {
-      position: relative;
-      display: inline-block;
-      margin: 0 0.5rem;
-    }
-    .button--bubble__effect-container {
-      position: absolute;
-      width: 200%; height: 400%;
-      top: -150%; left: -130%;
-      filter: url("#goo");
-      transition: all 0.1s ease-out;
-      pointer-events: none;
-    }
-    .button--bubble__effect-container .circle {
-      position: absolute;
-      width: 25px; height: 25px;
-      border-radius: 15px;
-      background: var(--dark-blue);
-      transition: background 0.1s ease-out;
-    }
-    .circle.top-left { top: 40%; left: 27%; }
-    .circle.bottom-right { bottom: 40%; right: 27%; }
-    .button--bubble__effect-container .effect-button {
-      position: absolute;
-      width: 50%; height: 25%;
-      top: 50%; left: 25%;
-      z-index: 1;
-      transform: translateY(-50%);
-      background: var(--dark-blue);
-      transition: background 0.1s ease-out;
-    }
-
+  
     /* ==== LANTERNA ==== */
     #lanterna {
       position: absolute;
@@ -181,83 +147,85 @@ if (!isset($_SESSION['usuario'])) {
       <canvas id="GraficoTeste" width="300" height="300"></canvas>
     </div>
 
-    <div class="d-flex justify-content-around">
-      <span class="button--bubble__container">
-        <button id="botao1" class="button button--bubble" onclick="alternarEstado(this)">OFF</button>
-        <span class="button--bubble__effect-container">
-          <span class="circle top-left"></span>
-          <span class="circle top-left"></span>
-          <span class="circle top-left"></span>
-          <span class="button effect-button"></span>
-          <span class="circle bottom-right"></span>
-          <span class="circle bottom-right"></span>
-          <span class="circle bottom-right"></span>
-        </span>
-      </span>
-      <span class="button--bubble__container">
-        <button id="botao2" class="button button--bubble" onclick="alternarEstado(this)">OFF</button>
-        <span class="button--bubble__effect-container">
-          <span class="circle top-left"></span>
-          <span class="circle top-left"></span>
-          <span class="circle top-left"></span>
-          <span class="button effect-button"></span>
-          <span class="circle bottom-right"></span>
-          <span class="circle bottom-right"></span>
-          <span class="circle bottom-right"></span>
-        </span>
-      </span>
-    </div>
-  </div>
+    <label for="button">Controle do LED físico</label>
+    <button class="button" id="button" onclick="alternarEstado('button')">OFF</button>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
   <script>
-    // animação bubble
-    $('.button--bubble').each(function() {
-      var $tl = $(this).parent().find('.circle.top-left'),
-          $br = $(this).parent().find('.circle.bottom-right'),
-          t1 = new TimelineLite(),
-          t2 = new TimelineLite(),
-          bt = new TimelineLite({ paused: true });
-
-      t1.to($tl,1.2,{x:-25,y:-25,scaleY:2,ease:SlowMo.ease.config(0.1,0.7,false)})
-        .to($tl.eq(0),.1,{scale:0.2,x:'+=6',y:'-=2'})
-        .to($tl.eq(1),.1,{scaleX:1,scaleY:0.8,x:'-=10',y:'-=7'},'-=0.1')
-        .to($tl.eq(2),.1,{scale:0.2,x:'-=15',y:'+=6'},'-=0.1')
-        .to($tl,1,{scale:0,opacity:0,stagger:0.1});
-      t2.to($br,1.1,{x:30,y:30,ease:SlowMo.ease.config(0.1,0.7,false)})
-        .to($br.eq(0),.1,{scale:0.2,x:'-=6',y:'+=3'})
-        .to($br.eq(1),.1,{scale:0.8,x:'+=7',y:'+=3'},'-=0.1')
-        .to($br.eq(2),.1,{scale:0.2,x:'+=15',y:'-=6'},'-=0.2')
-        .to($br,1,{scale:0,opacity:0,stagger:0.1});
-      bt.add(t1)
-        .to($(this).parent().find('.effect-button'),0.8,{scaleY:1.1},0.1)
-        .add(t2,0.2)
-        .to($(this).parent().find('.effect-button'),1.8,{scale:1,ease:Elastic.easeOut.config(1.2,0.4)},1.2)
-        .timeScale(2.6);
-      $(this).on('mouseover',()=>bt.restart());
-    });
 
     // WebSocket e gráfico originais
     let ultimoDado = null;
-    const socket = new WebSocket('ws://192.168.30.100:8080');
+    let LampTipo = 'null';
+    let LampStatus = 'null';
+    let control = false;
+    const socket = new WebSocket('ws://localhost:8888');
     socket.onopen = () => console.log("Conectado");
     socket.onerror = e => console.error(e);
     socket.onmessage = e => {
-      try {
-        const d = JSON.parse(e.data);
-        if ('canal_analogico' in d) ultimoDado = d.canal_analogico;
-      } catch {}
+          try {
+            const dados = JSON.parse(event.data);
+            if ('Tipo' in dados){
+              LampTipo = dados.Tipo;
+              LampStatus = dados.Status;
+              console.log("O estado da "+LampTipo+" é: "+ LampStatus + "   Horário: "+ new Date().toLocaleTimeString());
+            }   
+            //LAMPADA 1
+            if(LampTipo ==="LAMP1" && LampStatus === "ON") {
+              document.getElementById("lanterna").classList.remove("off");
+              document.getElementById("lanterna").classList.add("on");
+            }
+             if(LampTipo ==="LAMP1" && LampStatus === "OFF") {
+              document.getElementById("lanterna").classList.remove("on");
+              document.getElementById("lanterna").classList.add("off");
+            }
+
+            //LAMPADA 2
+            if(LampTipo ==="LAMP2" && LampStatus === "ON" && !control) {
+              document.getElementById("button").innerText = "ON";
+              control = true;
+
+            }
+              if(LampTipo ==="LAMP2" && LampStatus === "OFF" && control) {
+              document.getElementById("button").innerText = "OFF";
+             control = false;
+            }
+
+
+          } catch (error) {
+            console.error(error);
+          }
     };
 
-    function alternarEstado(btn) {
-      const novo = btn.textContent === 'ON' ? 'OFF' : 'ON';
-      btn.textContent = novo;
-      if (socket.readyState === WebSocket.OPEN)
-        socket.send(`Botao-${btn.id}: ${novo}`);
+  function alternarEstado(btn) {
+    const botao = document.getElementById("button");
+    const textoAtual = botao.innerText;
+    let novoEstado;
+    
+    if (textoAtual === "ON") {
+        botao.innerText = "OFF";
+        novoEstado = "OFF";
+    } else {
+        botao.innerText = "ON";
+        novoEstado = "ON";
     }
+    
+    // Prepara o payload em JSON
+    const estadoBotao = {
+        Tipo: "BUTTON",     
+        Status: novoEstado     
+    };
+    
+    if (socket.readyState === WebSocket.OPEN) {
+        botao.innerText = novoEstado;
+        socket.send(JSON.stringify(estadoBotao));
+        console.log("Enviando estado de botão: "+JSON.stringify(estadoBotao));
+    } else {
+        console.error("WebSocket não está conectado");
+    }
+}
 
     const ctx = document.getElementById('GraficoTeste').getContext('2d');
     const dados = { labels: [], datasets: [{ label: '', data: [], borderColor: 'blue', fill: false }] };
