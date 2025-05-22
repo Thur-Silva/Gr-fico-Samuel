@@ -147,6 +147,11 @@ if (!isset($_SESSION['usuario'])) {
       <canvas id="GraficoTeste" width="300" height="300"></canvas>
     </div>
 
+            <div class="input-group mb-3">
+            <span class="input-group-text">Status Sensor</span>
+            <input type="text" readonly id="txtStatusSensor" class="form-control" placeholder="Aguardando dados...">
+        </div>
+
     <label for="button">Controle do LED físico</label>
     <button class="button" id="button" onclick="alternarEstado('button')">OFF</button>
 
@@ -176,21 +181,25 @@ if (!isset($_SESSION['usuario'])) {
             if(LampTipo ==="LAMP1" && LampStatus === "ON") {
               document.getElementById("lanterna").classList.remove("off");
               document.getElementById("lanterna").classList.add("on");
+
+              registrarAcao("LAMP1","ON");
             }
              if(LampTipo ==="LAMP1" && LampStatus === "OFF") {
               document.getElementById("lanterna").classList.remove("on");
               document.getElementById("lanterna").classList.add("off");
+              registrarAcao("LAMP1","OFF");
             }
 
             //LAMPADA 2
             if(LampTipo ==="LAMP2" && LampStatus === "ON" && !control) {
               document.getElementById("button").innerText = "ON";
               control = true;
-
+              registrarAcao("LAMP2","ON");
             }
               if(LampTipo ==="LAMP2" && LampStatus === "OFF" && control) {
               document.getElementById("button").innerText = "OFF";
              control = false;
+              registrarAcao("LAMP2","OFF");
             }
 
 
@@ -257,6 +266,38 @@ if (!isset($_SESSION['usuario'])) {
       lanterna.classList.toggle('on');
       lanterna.classList.toggle('off');
     });
+
+        function formatarDataMySQL() {
+      const d = new Date();
+      const ano      = d.getFullYear();
+      const mes      = String(d.getMonth()+1).padStart(2,'0');
+      const dia      = String(d.getDate()).padStart(2,'0');
+      const hh       = String(d.getHours()).padStart(2,'0');
+      const mm       = String(d.getMinutes()).padStart(2,'0');
+      const ss       = String(d.getSeconds()).padStart(2,'0');
+      return `${ano}-${mes}-${dia} ${hh}:${mm}:${ss}`;
+    }
+
+    function registrarAcao(user, actionType) {
+      const nome   = user;
+      const action = actionType;
+      const time   = formatarDataMySQL();
+
+      return fetch('http://localhost:3000/dados', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, action, time })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Status ' + res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('Ação registrada:', data);
+        return data;
+      });
+    }
+    
   </script>
 </body>
 </html>

@@ -5,6 +5,7 @@ import mysql, { Connection } from 'mysql2';
 import { RowDataPacket } from 'mysql2';
 
 
+
 // Inicializa o app
 const app = express();
 app.use(cors());
@@ -73,6 +74,7 @@ app.delete('/dados/:id', (req: Request, res: Response) => {
         res.send({ message: `Registro ${id} removido.` });
     });
 });
+
 
 // Inicia o servidor
 app.listen(3000, () => {
